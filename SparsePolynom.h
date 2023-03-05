@@ -38,6 +38,7 @@ public:
 
 
     [[nodiscard]] std::size_t get_degree() const {
+        if (data_.empty()) return 0;
         return (*std::find_if(std::rbegin(data_), std::rend(data_), [](auto &element) {
             return std::fabs(element.second - 0) > std::numeric_limits<Type>::epsilon();
         })).first;
