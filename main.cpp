@@ -5,7 +5,7 @@ int main() {
                                {1, -1},
                                {2, 5}};
 
-    double result = horner_scheme(p, 3.);
+    double result = compensated_horner(p, 3.);
 
     std::cout << result;
 }

@@ -19,7 +19,7 @@ public:
     SparsePolynom() = default;
 
     SparsePolynom(const SparsePolynom<Type> &other) {
-        data_ = other.data_;
+        for (const auto& pair : data_) data_.insert(pair);
     }
 
     SparsePolynom(const std::initializer_list<std::pair<std::size_t, Type>> &initializer) {
@@ -40,6 +40,25 @@ public:
         return (*std::find_if(std::rbegin(data_), std::rend(data_), [](auto &element) {
             return std::fabs(element.second - 0) > std::numeric_limits<double>::epsilon();
         })).first;
+    }
+
+    void add(const std::pair<std::size_t, Type> &pair) {
+        data_.insert(pair);
+    }
+
+    SparsePolynom<Type> operator+=(const SparsePolynom<Type> &other) {
+        for (const auto &pair: other.data_) {
+            if (data_.contains(pair.first)) data_.at(pair.first) += pair.second;
+            else data_.insert(pair);
+        }
+        return *this;
+    }
+
+    SparsePolynom<Type> operator+(const SparsePolynom<Type> &other) const {
+        SparsePolynom<Type> result(*this);
+        result += other;
+
+        return result;
     }
 
 
