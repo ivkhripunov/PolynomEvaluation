@@ -13,6 +13,7 @@ class SparsePolynom {
 private:
 
     std::map<std::size_t, Type> data_; //пары степень - коэффициент
+    Type zero_ = static_cast<Type>(0);
 
 public:
 
@@ -28,7 +29,7 @@ public:
 
     const Type &operator[](const std::size_t &i) const {
         if (data_.contains(i)) return data_.at(i);
-        else return static_cast<Type>(0);
+        else return zero_;
     }
 
     bool contains_degree(const std::size_t &degree) const {
@@ -38,7 +39,7 @@ public:
 
     [[nodiscard]] std::size_t get_degree() const {
         return (*std::find_if(std::rbegin(data_), std::rend(data_), [](auto &element) {
-            return std::fabs(element.second - 0) > std::numeric_limits<double>::epsilon();
+            return std::fabs(element.second - 0) > std::numeric_limits<Type>::epsilon();
         })).first;
     }
 
