@@ -2,15 +2,7 @@
 #define POLYNOMEVALUATION_POLYNOMEVALUATION_H
 
 #include "Polynom.h"
-
-template<typename Type, std::size_t N>
-Type basic_evaluation(const Polynom<Type, N> &polynom, const Type &x) {
-    Type sum = static_cast<Type>(0);
-
-    for (std::size_t i = 0; i < polynom.get_degree() + 1; ++i) sum += polynom[i] * pow(x, i);
-
-    return sum;
-}
+#include <boost/multiprecision/cpp_dec_float.hpp>
 
 template<typename Type>
 Type two_sum(Type &error, const Type &a,
@@ -139,6 +131,33 @@ Type calc_error(const Polynom<Type, N> &polynom, const Type &x) {
                  2 * u * u * abs_res);
 
     return error;
+}
+
+template<typename Type>
+Type power(const Type &x, const std::size_t &degree) {
+    Type result = 1;
+    for (std::size_t i = 0; i < degree; ++i) result *= x;
+
+    return result;
+}
+
+
+template<typename Type, std::size_t N>
+Type basic_evaluation(const Polynom<Type, N> &polynom, const Type &x) {
+    Type sum = static_cast<Type>(0);
+
+    for (std::size_t i = 0; i < polynom.get_degree() + 1; ++i) sum += polynom[i] * power(x, i);
+
+    return sum;
+}
+
+template<typename Type, std::size_t N>
+Type basic_evaluation(const Polynom<Type, N> &polynom, const boost::multiprecision::cpp_dec_float_100 &x) {
+    boost::multiprecision::cpp_dec_float_100 sum("0");
+
+    for (std::size_t i = 0; i < polynom.get_degree() + 1; ++i) sum += polynom[i] * power(x, i);
+
+    return boost::numeric::converter<double, boost::multiprecision::cpp_dec_float_100>::convert(sum);
 }
 
 #endif //POLYNOMEVALUATION_POLYNOMEVALUATION_H
