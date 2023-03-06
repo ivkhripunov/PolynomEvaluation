@@ -109,6 +109,12 @@ Type compensated_horner(const Polynom<Type, N> &polynom, const Type &x) {
     return h + c;
 }
 
+/**
+ * Calculating polynom coeffs from given roots
+ * @tparam Type floating point type
+ * @param roots polynom roots
+ * @return vector of coeffs, vector[0] is zero degree
+ */
 template<typename Type>
 std::vector<Type> polynomial_coeffs(const std::vector<Type> &roots) {
 
@@ -127,6 +133,14 @@ std::vector<Type> polynomial_coeffs(const std::vector<Type> &roots) {
 
 }
 
+/**
+ * Calculating condition number
+ * @tparam Type floating point type
+ * @tparam N polynom degree
+ * @param polynom polynom with FP coeffs
+ * @param x value for polynom calculation
+ * @return condition number
+ */
 template<typename Type, std::size_t N>
 Type calc_condition_number(const Polynom<Type, N> &polynom, const Type &x) {
     Type sum_1 = abs(horner(polynom, x));
@@ -139,11 +153,23 @@ Type calc_condition_number(const Polynom<Type, N> &polynom, const Type &x) {
     return sum_2 / sum_1;
 }
 
+/**
+ * Auxilary function for error calculation
+ */
 template<typename Type>
 Type calc_gamma(const std::size_t &n, const Type &u) {
     return n * u / (1 - n * u);
 }
 
+/**
+ * Function for calculating maximum error of Horner scheme
+ * u is chosen for double precision!!! Do not use for other types without setup!
+ * @tparam Type floating point type
+ * @tparam N polynom degree
+ * @param polynom polynom with FP coeffs
+ * @param x value for polynom calculation
+ * @return max error
+ */
 template<typename Type, std::size_t N>
 Type calc_error(const Polynom<Type, N> &polynom, const Type &x) {
     Type abs_res = fabs(horner(polynom, x));
@@ -167,6 +193,9 @@ Type calc_error(const Polynom<Type, N> &polynom, const Type &x) {
     return error;
 }
 
+/**
+ * Auxiliary function
+ */
 template<typename Type>
 Type power(const Type &x, const std::size_t &degree) {
     Type result = 1;
@@ -175,7 +204,14 @@ Type power(const Type &x, const std::size_t &degree) {
     return result;
 }
 
-
+/**
+ * Basic way of evaluating polynom
+ * @tparam Type floating point type
+ * @tparam N polynom degree
+ * @param polynom polynom with FP coeffs
+ * @param x value for polynom calculation
+ * @return polynom value in point x
+ */
 template<typename Type, std::size_t N>
 Type basic_evaluation(const Polynom<Type, N> &polynom, const Type &x) {
     Type sum = static_cast<Type>(0);
@@ -184,14 +220,5 @@ Type basic_evaluation(const Polynom<Type, N> &polynom, const Type &x) {
 
     return sum;
 }
-/*
-template<typename Type, std::size_t N>
-Type basic_evaluation(const Polynom<Type, N> &polynom, const boost::multiprecision::cpp_dec_float_100 &x) {
-    boost::multiprecision::cpp_dec_float_100 sum("0");
-
-    for (std::size_t i = 0; i < polynom.get_degree() + 1; ++i) sum += polynom[i] * power(x, i);
-
-    return boost::numeric::converter<double, boost::multiprecision::cpp_dec_float_100>::convert(sum);
-}*/
 
 #endif //POLYNOMEVALUATION_POLYNOMEVALUATION_H
