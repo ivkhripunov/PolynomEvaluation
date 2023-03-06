@@ -3,6 +3,15 @@
 
 #include "Polynom.h"
 
+template<typename Type, std::size_t N>
+Type basic_evaluation(const Polynom<Type, N> &polynom, const Type &x) {
+    Type sum = static_cast<Type>(0);
+
+    for (std::size_t i = 0; i < polynom.get_degree() + 1; ++i) sum += polynom[i] * pow(x, i);
+
+    return sum;
+}
+
 template<typename Type>
 Type two_sum(Type &error, const Type &a,
              const Type &b) {
@@ -66,7 +75,7 @@ Type compensated_horner(const Polynom<Type, N> &polynom, const Type &x) {
 
     Polynom<Type, N - 1> poly = p_pi + p_sigma;
 
-    std::cout << poly;
+    //std::cout << poly;
 
     Type c = horner(poly, x);
     Type res = h + c;
