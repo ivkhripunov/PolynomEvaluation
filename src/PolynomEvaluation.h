@@ -20,7 +20,7 @@ Type two_sum(Type &error, const Type &a,
     Type tmp = sum - a;
     error = a - (sum - tmp) + (b - tmp);
 
-    return sum; //возвращаем сумму
+    return sum;
 }
 
 /**
@@ -187,7 +187,7 @@ Type calc_error(const Polynom<Type, N> &polynom, const Type &x) {
         abs_p_sigma[i] = fabs(p_sigma[i]);
     }
 
-    Type error = u * abs_res + (gamma(4 * polynom.get_degree() + 2) * horner(abs_p_pi + abs_p_sigma, fabs(x)) +
+    Type error = u * abs_res + (calc_gamma(4 * polynom.get_degree() + 2, u) * horner(abs_p_pi + abs_p_sigma, fabs(x)) +
                                 2 * u * u * abs_res);
 
     return error;

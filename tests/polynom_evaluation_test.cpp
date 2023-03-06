@@ -64,8 +64,8 @@ TEST(POLYNOM_EVAL, TEST_2) {
         boost::multiprecision::cpp_dec_float_100 boost_result("0");
         double comp_horner_result = 0, horner_result = 0, basic_result = 0;
 
-        double x = 1.5 + step * i;
-        boost::multiprecision::cpp_dec_float_100 start("1.5");
+        double x = 1.53 + step * i;
+        boost::multiprecision::cpp_dec_float_100 start("1.53");
         boost::multiprecision::cpp_dec_float_100 boost_x = start + i * boost_step;
 
         std::size_t n = 100;
