@@ -44,22 +44,33 @@ Type two_product_fma(Type &error, const Type &a,
  * Horner scheme
  * @tparam Type floating point type
  * @tparam N polynom degree
- * @param polynom polynom with FP coefs
+ * @param polynom polynom with FP coeffs
  * @param x value for polynom calculation
  * @return polynom value in point x
  */
 template<typename Type, std::size_t N>
 Type horner(const Polynom<Type, N> &polynom, const Type &x) {
 
-    Type sum = polynom[polynom.get_degree()];
+    Type sum = polynom[polynom.get_degree()], p;
 
     for (long long i = polynom.get_degree() - 1; i >= 0; i--) {
-        sum = polynom[i] + sum * x;
+        p = sum * x;
+        sum = p + polynom[i];
     }
 
     return sum;
 }
 
+/**
+ * Error free transformation for the Horner scheme
+ * @tparam Type floating point type
+ * @tparam N polynom degree
+ * @param polynom polynom with FP coeffs
+ * @param x value for polynom calculation
+ * @param p_pi error polynom
+ * @param p_sigma error polynom
+ * @return polynom evaluated via Horner scheme
+ */
 template<typename Type, std::size_t N>
 Type
 EFT_horner(const Polynom<Type, N> &polynom, const Type &x, Polynom<Type, N - 1> &p_pi, Polynom<Type, N - 1> &p_sigma) {
@@ -78,6 +89,14 @@ EFT_horner(const Polynom<Type, N> &polynom, const Type &x, Polynom<Type, N - 1> 
     return horner(polynom, x);
 }
 
+/**
+ * Compensated Horner scheme
+ * @tparam Type floating point type
+ * @tparam N polynom degree
+ * @param polynom polynom with FP coeffs
+ * @param x value for polynom calculation
+ * @return polynom value in point x
+ */
 template<typename Type, std::size_t N>
 Type compensated_horner(const Polynom<Type, N> &polynom, const Type &x) {
 
