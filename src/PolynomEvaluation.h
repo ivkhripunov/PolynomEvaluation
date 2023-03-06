@@ -21,17 +21,6 @@ Type two_sum(Type &error, const Type &a,
 }
 
 template<typename Type>
-Type split(Type &error, const Type &a) {
-    int s = 53 / 2;
-    Type factor = pow(2, s) + 1;
-    Type c = factor * a;
-    Type result = c - (c - a);
-    error = a - result;
-
-    return result;
-}
-
-template<typename Type>
 Type two_product_fma(Type &error, const Type &a,
                      const Type &b) {
     Type result = a * b;

@@ -1,6 +1,6 @@
 #include "../src/PolynomEvaluation.h"
 #include <gtest/gtest.h>
-#include <iomanip>
+
 
 TEST(POLYNOM_EVAL, TEST_1) {
     std::vector<double> roots = {1, 1, 1, 1, 1};

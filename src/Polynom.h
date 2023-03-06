@@ -39,14 +39,6 @@ public:
         return data_[i];
     }
 
-    [[nodiscard]] Type norm() const {
-        Type square_sum = 0;
-
-        for (const auto &element: data_) square_sum += element * element;
-
-        return pow(square_sum, 0.5);
-    }
-
     [[nodiscard]] std::size_t get_degree() const {
         return N;
     }
