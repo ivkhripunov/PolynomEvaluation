@@ -4,18 +4,33 @@
 #include "Polynom.h"
 #include <boost/multiprecision/cpp_dec_float.hpp>
 
+/**
+ * Error-free transformation of the sum of 2 floating point numbers
+ * @tparam Type floating point type
+ * @param error operational error, is changed in func
+ * @param a floating point number
+ * @param b floating point number
+ * @return sum of numbers
+ */
 template<typename Type>
 Type two_sum(Type &error, const Type &a,
              const Type &b) {
-    /// Функция для вычисления суммы a + b и ошибки на шаге
 
     Type sum = a + b;
-    Type z = sum - a;
-    error = (a - (sum - z) + (b - z));
+    Type tmp = sum - a;
+    error = a - (sum - tmp) + (b - tmp);
 
     return sum; //возвращаем сумму
 }
 
+/**
+ * Error-free transformation of the product of to floating point numbers with Fused Multiply and add (FMA)
+ * @tparam Type floating point type
+ * @param error operational error, is changed in func
+ * @param a floating point number
+ * @param b floating point number
+ * @return result of a * b
+ */
 template<typename Type>
 Type two_product_fma(Type &error, const Type &a,
                      const Type &b) {
@@ -25,6 +40,14 @@ Type two_product_fma(Type &error, const Type &a,
     return result;
 }
 
+/**
+ * Horner scheme
+ * @tparam Type floating point type
+ * @tparam N polynom degree
+ * @param polynom polynom with FP coefs
+ * @param x value for polynom calculation
+ * @return polynom value in point x
+ */
 template<typename Type, std::size_t N>
 Type horner(const Polynom<Type, N> &polynom, const Type &x) {
 
