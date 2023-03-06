@@ -9,14 +9,9 @@ Type two_sum(Type &error, const Type &a,
              const Type &b) {
     /// Функция для вычисления суммы a + b и ошибки на шаге
 
-    Type sum = a + b; //вычисляем сумму напрямую
-    Type b_virtual = sum - a; // часть "b" в "sum" : =b if a<b
-    Type a_virtual = sum - b_virtual; // часть "a" в "sum" : =a if a>b
-
-    Type b_round_error = b - b_virtual; //ошибка округления "b" : =0 if a<b
-    Type a_round_error = a - a_virtual; //ошибка округления "a" : =0 if a>b
-
-    error += a_round_error + b_round_error; //к итоговой ошибке прибавляем ошибку на шаге
+    Type sum = a + b;
+    Type z = sum - a;
+    error = (a - (sum - z) + (b - z));
 
     return sum; //возвращаем сумму
 }
@@ -26,6 +21,8 @@ Type two_product_fma(Type &error, const Type &a,
                      const Type &b) {
     Type result = a * b;
     error = std::fma(a, b, -result);
+
+    return result;
 }
 
 template<typename Type, std::size_t N>
@@ -65,14 +62,9 @@ Type compensated_horner(const Polynom<Type, N> &polynom, const Type &x) {
 
     Type h = EFT_horner(polynom, x, p_pi, p_sigma);
 
-    Polynom<Type, N - 1> poly = p_pi + p_sigma;
+    Type c = horner(p_pi + p_sigma, x);
 
-    //std::cout << poly;
-
-    Type c = horner(poly, x);
-    Type res = h + c;
-
-    return res;
+    return h + c;
 }
 
 template<typename Type>
@@ -128,7 +120,7 @@ Type calc_error(const Polynom<Type, N> &polynom, const Type &x) {
     }
 
     Type error = u * abs_res + (gamma(4 * polynom.get_degree() + 2) * horner(abs_p_pi + abs_p_sigma, fabs(x)) +
-                 2 * u * u * abs_res);
+                                2 * u * u * abs_res);
 
     return error;
 }
@@ -150,7 +142,7 @@ Type basic_evaluation(const Polynom<Type, N> &polynom, const Type &x) {
 
     return sum;
 }
-
+/*
 template<typename Type, std::size_t N>
 Type basic_evaluation(const Polynom<Type, N> &polynom, const boost::multiprecision::cpp_dec_float_100 &x) {
     boost::multiprecision::cpp_dec_float_100 sum("0");
@@ -158,6 +150,6 @@ Type basic_evaluation(const Polynom<Type, N> &polynom, const boost::multiprecisi
     for (std::size_t i = 0; i < polynom.get_degree() + 1; ++i) sum += polynom[i] * power(x, i);
 
     return boost::numeric::converter<double, boost::multiprecision::cpp_dec_float_100>::convert(sum);
-}
+}*/
 
 #endif //POLYNOMEVALUATION_POLYNOMEVALUATION_H

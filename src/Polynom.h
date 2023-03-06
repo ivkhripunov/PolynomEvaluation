@@ -5,7 +5,6 @@
 #include <vector>
 #include <iostream>
 #include <initializer_list>
-#include <algorithm>
 #include <cmath>
 #include <iterator>
 
@@ -16,11 +15,11 @@ protected:
     std::array<Type, N + 1> data_;
 public:
     constexpr Polynom() {
-        data_.fill(0);
+        data_.fill(static_cast<Type>(0));
     }
 
     constexpr Polynom(const Polynom<Type, N> &other) {
-        data_ = other.data_;
+        for (auto i = 0; i < N + 1; ++i) data_[i] = *(other.data_.begin() + i);
     }
 
     constexpr Polynom(const std::initializer_list<Type> &initializer) {
