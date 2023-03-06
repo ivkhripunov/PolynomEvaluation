@@ -2,10 +2,16 @@
 #include <iomanip>
 
 int main() {
-    SparsePolynom<double> p = {{0,  1},
-                               };
+    std::vector<double> roots = {1, 1, 1, 1, 1};
 
-    double result = compensated_horner(p, 1.0001);
+    Polynom<double, 5> p(polynomial_coeffs(roots));
+
+    double x = 1;
+
+    std::cout << "||" << calc_error(p, x) << "||"<< std::endl;
+
+    bool result = fabs(horner(p, x)) < calc_error(p, x);
 
     std::cout << std::fixed << std::setprecision(16) << result;
+
 }
