@@ -1,0 +1,4 @@
+
+add_executable(polynom_evaluation_test polynom_evaluation_test.cpp)
+add_test(NAME polynom_evaluation_test COMMAND polynom_evaluation_test.cpp)
+target_link_libraries(polynom_evaluation_test PolynomEvaluation gtest gtest_main)
