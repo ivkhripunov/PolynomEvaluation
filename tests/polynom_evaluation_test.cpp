@@ -30,7 +30,7 @@ TEST(POLYNOM_EVAL, TEST_1) {
             basic_result += basic_evaluation(p, x);
             horner_result += horner(p, x);
             comp_horner_result += compensated_horner(p, x);
-            boost_result += horner(boost_p, boost_x);
+            boost_result += basic_evaluation(boost_p, boost_x);
 
         }
 
@@ -39,7 +39,7 @@ TEST(POLYNOM_EVAL, TEST_1) {
              << basic_result / n << " "
              << horner_result / n << " "
              << comp_horner_result / n << " "
-             << calc_error(p, x) << std::endl;
+             << 0 << std::endl;
 
     }
 
@@ -84,7 +84,7 @@ TEST(POLYNOM_EVAL, TEST_2) {
              << basic_result / n << " "
              << horner_result / n << " "
              << comp_horner_result / n << " "
-             << calc_error(p, x) << std::endl;
+             << 0 << std::endl;
     }
 
     file.close();
@@ -128,7 +128,7 @@ TEST(POLYNOM_EVAL, TEST_3) {
              << basic_result / n << " "
              << horner_result / n << " "
              << comp_horner_result / n << " "
-             << calc_error(p, x) << std::endl;
+             << 0 << std::endl;
     }
 
     file.close();

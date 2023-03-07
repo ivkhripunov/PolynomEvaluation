@@ -4,40 +4,47 @@
 #include "Polynom.h"
 #include <boost/multiprecision/cpp_dec_float.hpp>
 
+template<typename Type>
+struct ReturnStruct {
+    Type result;
+    Type error;
+};
+
 /**
  * Error-free transformation of the sum of 2 floating point numbers
  * @tparam Type floating point type
- * @param error operational error, is changed in func
  * @param a floating point number
  * @param b floating point number
- * @return sum of numbers
+ * @return struct: sum of numbers and error
  */
 template<typename Type>
-Type two_sum(Type &error, const Type &a,
-             const Type &b) {
+ReturnStruct<Type> two_sum(const Type &a,
+                           const Type &b) {
 
-    Type sum = a + b;
-    Type tmp = sum - a;
-    error = a - (sum - tmp) + (b - tmp);
+    ReturnStruct<Type> out;
 
-    return sum;
+    out.result = a + b;
+    Type tmp = out.result - a;
+    out.error = a - (out.result - tmp) + (b - tmp);
+
+    return out;
 }
 
 /**
  * Error-free transformation of the product of to floating point numbers with Fused Multiply and add (FMA)
  * @tparam Type floating point type
- * @param error operational error, is changed in func
  * @param a floating point number
  * @param b floating point number
- * @return result of a * b
+ * @return struct: result of a * b and error
  */
 template<typename Type>
-Type two_product_fma(Type &error, const Type &a,
-                     const Type &b) {
-    Type result = a * b;
-    error = std::fma(a, b, -result);
+ReturnStruct<Type> two_product_fma(const Type &a,
+                                   const Type &b) {
+    ReturnStruct<Type> out;
+    out.result = a * b;
+    out.error = std::fma(a, b, -out.result);
 
-    return result;
+    return out;
 }
 
 /**
@@ -62,35 +69,7 @@ Type horner(const Polynom<Type, N> &polynom, const Type &x) {
 }
 
 /**
- * Error free transformation for the Horner scheme
- * @tparam Type floating point type
- * @tparam N polynom degree
- * @param polynom polynom with FP coeffs
- * @param x value for polynom calculation
- * @param p_pi error polynom
- * @param p_sigma error polynom
- * @return polynom evaluated via Horner scheme
- */
-template<typename Type, std::size_t N>
-Type
-EFT_horner(const Polynom<Type, N> &polynom, const Type &x, Polynom<Type, N - 1> &p_pi, Polynom<Type, N - 1> &p_sigma) {
-
-    Type p_i, pi_i, s_i = polynom[polynom.get_degree()], sigma_i;
-
-    for (long long i = polynom.get_degree() - 1; i >= 0; i--) {
-
-        p_i = two_product_fma(pi_i, s_i, x);
-        s_i = two_sum(sigma_i, p_i, polynom[i]);
-
-        p_pi[i] = pi_i;
-        p_sigma[i] = sigma_i;
-    }
-
-    return horner(polynom, x);
-}
-
-/**
- * Compensated Horner scheme
+ * Compensated Horner Scheme
  * @tparam Type floating point type
  * @tparam N polynom degree
  * @param polynom polynom with FP coeffs
@@ -98,15 +77,24 @@ EFT_horner(const Polynom<Type, N> &polynom, const Type &x, Polynom<Type, N - 1> 
  * @return polynom value in point x
  */
 template<typename Type, std::size_t N>
-Type compensated_horner(const Polynom<Type, N> &polynom, const Type &x) {
+Type
+compensated_horner(const Polynom<Type, N> &polynom, const Type &x) {
 
-    Polynom<Type, N - 1> p_pi, p_sigma;
+    Polynom<Type, N - 1> polynom_pi, polynom_sigma;
 
-    Type h = EFT_horner(polynom, x, p_pi, p_sigma);
+    ReturnStruct<Type> p, s;
+    s.result = polynom[polynom.get_degree()];
 
-    Type c = horner(p_pi + p_sigma, x);
+    for (long long i = polynom.get_degree() - 1; i >= 0; i--) {
 
-    return h + c;
+        p = two_product_fma(s.result, x);
+        s = two_sum(p.result, polynom[i]);
+
+        polynom_pi[i] = p.error;
+        polynom_sigma[i] = s.error;
+    }
+
+    return horner(polynom, x) + horner(polynom_pi + polynom_sigma, x);
 }
 
 /**
@@ -159,38 +147,6 @@ Type calc_condition_number(const Polynom<Type, N> &polynom, const Type &x) {
 template<typename Type>
 Type calc_gamma(const std::size_t &n, const Type &u) {
     return n * u / (1 - n * u);
-}
-
-/**
- * Function for calculating maximum error of Horner scheme
- * u is chosen for double precision!!! Do not use for other types without setup!
- * @tparam Type floating point type
- * @tparam N polynom degree
- * @param polynom polynom with FP coeffs
- * @param x value for polynom calculation
- * @return max error
- */
-template<typename Type, std::size_t N>
-Type calc_error(const Polynom<Type, N> &polynom, const Type &x) {
-    Type abs_res = fabs(horner(polynom, x));
-
-    double u = 1.11e-16;
-
-    Polynom<Type, N - 1> p_pi, p_sigma;
-
-    EFT_horner(polynom, x, p_pi, p_sigma);
-
-    Polynom<Type, N - 1> abs_p_pi(p_pi), abs_p_sigma(p_sigma);
-
-    for (std::size_t i = 0; i < abs_p_pi.get_degree() + 1; ++i) {
-        abs_p_pi[i] = fabs(p_pi[i]);
-        abs_p_sigma[i] = fabs(p_sigma[i]);
-    }
-
-    Type error = u * abs_res + (calc_gamma(4 * polynom.get_degree() + 2, u) * horner(abs_p_pi + abs_p_sigma, fabs(x)) +
-                                2 * u * u * abs_res);
-
-    return error;
 }
 
 /**
