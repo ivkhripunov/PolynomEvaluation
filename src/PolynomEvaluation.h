@@ -18,8 +18,7 @@ struct ReturnStruct {
  * @return struct: sum of numbers and error
  */
 template<typename Type>
-ReturnStruct<Type> two_sum(const Type &a,
-                           const Type &b) {
+ReturnStruct<Type> two_sum(const Type &a, const Type &b) {
 
     ReturnStruct<Type> out;
 
@@ -78,8 +77,7 @@ Type horner(const Polynom<Type, N> &polynom, const Type &x) {
  * @return polynom value in point x
  */
 template<typename Type, std::size_t N>
-Type
-compensated_horner(const Polynom<Type, N> &polynom, const Type &x) {
+Type compensated_horner(const Polynom<Type, N> &polynom, const Type &x) {
 
     Polynom<Type, N - 1> polynom_pi, polynom_sigma;
 
