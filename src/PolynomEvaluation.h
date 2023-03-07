@@ -41,6 +41,7 @@ template<typename Type>
 ReturnStruct<Type> two_product_fma(const Type &a,
                                    const Type &b) {
     ReturnStruct<Type> out;
+
     out.result = a * b;
     out.error = std::fma(a, b, -out.result);
 
@@ -94,7 +95,7 @@ compensated_horner(const Polynom<Type, N> &polynom, const Type &x) {
         polynom_sigma[i] = s.error;
     }
 
-    return horner(polynom, x) + horner(polynom_pi + polynom_sigma, x);
+    return s.result + horner(polynom_pi + polynom_sigma, x);
 }
 
 /**
