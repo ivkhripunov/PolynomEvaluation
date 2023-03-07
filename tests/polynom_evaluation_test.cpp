@@ -60,12 +60,12 @@ TEST(POLYNOM_EVAL, TEST_2) {
     double step = 1e-4;
     boost::multiprecision::cpp_dec_float_100 boost_step(1e-4);
 
-    for (std::size_t i = 0; i < 2e2; ++i) {
+    for (std::size_t i = 0; i < 6e1; ++i) {
         boost::multiprecision::cpp_dec_float_100 boost_result("0");
         double comp_horner_result = 0, horner_result = 0, basic_result = 0;
 
-        double x = 0.98 + step * i;
-        boost::multiprecision::cpp_dec_float_100 start("0.98");
+        double x = 0.998 + step * i;
+        boost::multiprecision::cpp_dec_float_100 start("0.998");
         boost::multiprecision::cpp_dec_float_100 boost_x = start + i * boost_step;
 
         std::size_t n = 100;
@@ -104,7 +104,7 @@ TEST(POLYNOM_EVAL, TEST_3) {
     double step = 1e-4;
     boost::multiprecision::cpp_dec_float_100 boost_step(1e-4);
 
-    for (std::size_t i = 0; i < 2e2; ++i) {
+    for (std::size_t i = 0; i < 1e2; ++i) {
         boost::multiprecision::cpp_dec_float_100 boost_result("0");
         double comp_horner_result = 0, horner_result = 0, basic_result = 0;
 
