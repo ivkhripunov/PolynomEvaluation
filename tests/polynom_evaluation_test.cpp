@@ -39,7 +39,7 @@ TEST(POLYNOM_EVAL, TEST_1) {
              << basic_result / n << " "
              << horner_result / n << " "
              << comp_horner_result / n << " "
-             << 0 << std::endl;
+             << calc_error(p, x, 1.11e-16) << std::endl;
 
     }
 
@@ -128,8 +128,49 @@ TEST(POLYNOM_EVAL, TEST_3) {
              << basic_result / n << " "
              << horner_result / n << " "
              << comp_horner_result / n << " "
-             << 0 << std::endl;
+             << calc_error(p, x, 1.11e-16) << std::endl;
     }
+
+    file.close();
+
+}
+
+TEST(POLYNOM_EVAL, TEST_4) {
+    std::ofstream file;
+    file.open("/home/ivankhripunov/CLionProjects/PolynomEvaluation/tests/log_1.txt", std::ios::app);
+
+
+    std::vector<double> roots(22, 1);
+    std::vector<boost::multiprecision::cpp_dec_float_100> boost_roots(22, 1);
+
+    Polynom<double, 22> p(polynomial_coeffs(roots));
+    Polynom<boost::multiprecision::cpp_dec_float_100, 22> boost_p(polynomial_coeffs(boost_roots));
+
+    std::size_t n = 100;
+
+    boost::multiprecision::cpp_dec_float_100 boost_result("0");
+    double comp_horner_result = 0, horner_result = 0, basic_result = 0;
+
+    double x = 1.333;
+    boost::multiprecision::cpp_dec_float_100 boost_x("1.333");
+
+    for (std::size_t j = 0; j < n; ++j) {
+
+        basic_result += basic_evaluation(p, x);
+        horner_result += horner(p, x);
+        comp_horner_result += compensated_horner(p, x);
+        boost_result += horner(boost_p, boost_x);
+
+    }
+
+    file << std::fixed << std::setprecision(16)
+         << x << " " << boost_result / n << " "
+         << basic_result / n << " "
+         << horner_result / n << " "
+         << comp_horner_result / n << " "
+         << calc_error(p, x, 1.11e-16) << " "
+         << calc_condition_number(p, x) << std::endl;
+
 
     file.close();
 

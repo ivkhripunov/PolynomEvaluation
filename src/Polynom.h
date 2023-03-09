@@ -55,6 +55,17 @@ public:
         return result;
     }
 
+    Polynom<Type, N> get_abs() const {
+
+        Polynom<Type, N> result(*this);
+
+        for (auto& element : result.data_) {
+            if (element < 0) element = - element;
+        }
+
+        return result;
+    }
+
     friend std::ostream &operator<<(std::ostream &out, const Polynom<Type, N> &polynom) {
         for (const auto &element: polynom.data_) out << element << " ";
         out << std::endl;

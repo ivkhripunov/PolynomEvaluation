@@ -23,8 +23,7 @@ ReturnStruct<Type> two_sum(const Type &a, const Type &b) {
     ReturnStruct<Type> out;
 
     out.result = a + b;
-    Type tmp = out.result - a;
-    out.error = a - (out.result - tmp) + (b - tmp);
+    out.error = a - (out.result - (out.result - a)) + (b - (out.result - a));
 
     return out;
 }
@@ -130,22 +129,16 @@ std::vector<Type> polynomial_coeffs(const std::vector<Type> &roots) {
  */
 template<typename Type, std::size_t N>
 Type calc_condition_number(const Polynom<Type, N> &polynom, const Type &x) {
-    Type sum_1 = abs(horner(polynom, x));
-    Polynom<Type, N> abs_polynom(polynom);
 
-    for (std::size_t i = 0; i < N + 1; ++i) abs_polynom[i] = fabs(polynom[i]);
-
-    Type sum_2 = horner(abs_polynom, fabs(x));
-
-    return sum_2 / sum_1;
+    return compensated_horner(polynom.get_abs(), fabs(x)) / fabs(compensated_horner(polynom, x));
 }
 
 /**
  * Auxilary function for error calculation
  */
 template<typename Type>
-Type calc_gamma(const std::size_t &n, const Type &u) {
-    return n * u / (1 - n * u);
+Type calc_gamma(const std::size_t &n, const Type &unit_roundoff) {
+    return n * unit_roundoff / (1 - n * unit_roundoff);
 }
 
 /**
@@ -174,6 +167,30 @@ Type basic_evaluation(const Polynom<Type, N> &polynom, const Type &x) {
     for (std::size_t i = 0; i < polynom.get_degree() + 1; ++i) sum += polynom[i] * power(x, i);
 
     return sum;
+}
+
+template<typename Type, std::size_t N>
+Type calc_error(const Polynom<Type, N> &polynom, const Type &x, const Type &unit_roundoff) {
+
+    Polynom<Type, N - 1> polynom_pi, polynom_sigma;
+
+    ReturnStruct<Type> p, s;
+    s.result = polynom[polynom.get_degree()];
+
+    for (long long i = polynom.get_degree() - 1; i >= 0; i--) {
+
+        p = two_product_fma(s.result, x);
+        s = two_sum(p.result, polynom[i]);
+
+        polynom_pi[i] = p.error;
+        polynom_sigma[i] = s.error;
+    }
+
+    return unit_roundoff * fabs(compensated_horner(polynom, x)) +
+           gamma(4 * polynom.get_degree() + 2) *
+           horner(polynom_pi.get_abs() + polynom_sigma.get_abs(), fabs(x)) +
+           2 * unit_roundoff * unit_roundoff *
+           fabs(compensated_horner(polynom, x));
 }
 
 #endif //POLYNOMEVALUATION_POLYNOMEVALUATION_H
