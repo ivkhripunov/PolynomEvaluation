@@ -94,8 +94,6 @@ Type compensated_horner(const Polynom<Type, N> &polynom, const Type &x) {
         polynom_sigma[i] = s.error;
     }
 
-    std::cout << polynom_pi + polynom_sigma;
-
     return s.result + horner(polynom_pi + polynom_sigma, x);
 }
 
