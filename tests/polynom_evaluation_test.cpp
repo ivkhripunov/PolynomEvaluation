@@ -1,7 +1,7 @@
 #include "../src/PolynomEvaluation.h"
 #include <gtest/gtest.h>
 #include <fstream>
-
+/*
 TEST(POLYNOM_EVAL, TEST_1) {
     std::ofstream file;
     file.open("/home/ivankhripunov/CLionProjects/PolynomEvaluation/tests/log_1.txt");
@@ -116,10 +116,10 @@ TEST(POLYNOM_EVAL, TEST_3) {
 
         for (std::size_t j = 0; j < n; ++j) {
 
-            basic_result += basic_evaluation(p, x);
-            horner_result += horner(p, x);
-            comp_horner_result += compensated_horner(p, x);
-            boost_result += horner(boost_p, boost_x);
+            basic_result = basic_evaluation(p, x);
+            horner_result = horner(p, x);
+            comp_horner_result = compensated_horner(p, x);
+            boost_result = horner(boost_p, boost_x);
 
         }
 
@@ -133,46 +133,37 @@ TEST(POLYNOM_EVAL, TEST_3) {
 
     file.close();
 
-}
+}*/
+
+const std::size_t deg = 15;
+const double x = 1.333;
 
 TEST(POLYNOM_EVAL, TEST_4) {
-    std::ofstream file;
-    file.open("/home/ivankhripunov/CLionProjects/PolynomEvaluation/tests/log_1.txt", std::ios::app);
+    std::ofstream out;
+    std::ifstream in;
+    std::string line;
+    double tmp;
+    out.open("/home/ivankhripunov/CLionProjects/PolynomEvaluation/tests/log_1.txt", std::ios::app);
+    in.open("/home/ivankhripunov/CLionProjects/PolynomEvaluation/tests/poly_coeff.txt");
 
+    std::vector<double> polynom_coeff;
 
-    std::vector<double> roots(22, 1);
-    std::vector<boost::multiprecision::cpp_dec_float_100> boost_roots(22, 1);
-
-    Polynom<double, 22> p(polynomial_coeffs(roots));
-    Polynom<boost::multiprecision::cpp_dec_float_100, 22> boost_p(polynomial_coeffs(boost_roots));
-
-    std::size_t n = 100;
-
-    boost::multiprecision::cpp_dec_float_100 boost_result("0");
-    double comp_horner_result = 0, horner_result = 0, basic_result = 0;
-
-    double x = 1.333;
-    boost::multiprecision::cpp_dec_float_100 boost_x("1.333");
-
-    for (std::size_t j = 0; j < n; ++j) {
-
-        basic_result += basic_evaluation(p, x);
-        horner_result += horner(p, x);
-        comp_horner_result += compensated_horner(p, x);
-        boost_result += horner(boost_p, boost_x);
-
+    for (std::size_t i = 0; i < deg + 1; ++i) {
+        in >> tmp;
+        polynom_coeff.push_back(tmp);
     }
 
-    file << std::fixed << std::setprecision(16)
-         << x << " " << boost_result / n << " "
-         << basic_result / n << " "
-         << horner_result / n << " "
-         << comp_horner_result / n << " "
-         << calc_error(p, x, 1.11e-16) << " "
-         << calc_condition_number(p, x) << std::endl;
+    Polynom<double, deg> p(polynom_coeff);
+
+    double comp_horner_result, horner_result;
+
+    horner_result = horner(p, x);
+    comp_horner_result = compensated_horner(p, x);
+
+    out << std::fixed << std::setprecision(23) << horner_result << " " << comp_horner_result << " " << deg << std::endl;
 
 
-    file.close();
+    out.close();
+    in.close();
 
 }
-

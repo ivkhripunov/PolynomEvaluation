@@ -2,7 +2,6 @@
 #define POLYNOMEVALUATION_POLYNOMEVALUATION_H
 
 #include "Polynom.h"
-#include <boost/multiprecision/cpp_dec_float.hpp>
 
 template<typename Type>
 struct ReturnStruct {
@@ -23,7 +22,11 @@ ReturnStruct<Type> two_sum(const Type &a, const Type &b) {
     ReturnStruct<Type> out;
 
     out.result = a + b;
-    out.error = a - (out.result - (out.result - a)) + (b - (out.result - a));
+    const Type b_virtual = out.result - a;
+    const Type a_virtual = out.result - b_virtual;
+    const Type b_roundoff = b - b_virtual;
+    const Type a_roundoff = a - a_virtual;
+    out.error = a_roundoff + b_roundoff;
 
     return out;
 }
@@ -57,11 +60,10 @@ ReturnStruct<Type> two_product_fma(const Type &a,
 template<typename Type, std::size_t N>
 Type horner(const Polynom<Type, N> &polynom, const Type &x) {
 
-    Type sum = polynom[polynom.get_degree()], p;
+    Type sum = polynom[polynom.get_degree()];
 
     for (long long i = polynom.get_degree() - 1; i >= 0; i--) {
-        p = sum * x;
-        sum = p + polynom[i];
+        sum = sum * x + polynom[i];
     }
 
     return sum;
@@ -81,9 +83,9 @@ Type compensated_horner(const Polynom<Type, N> &polynom, const Type &x) {
     Polynom<Type, N - 1> polynom_pi, polynom_sigma;
 
     ReturnStruct<Type> p, s;
-    s.result = polynom[polynom.get_degree()];
+    s.result = polynom[N];
 
-    for (long long i = polynom.get_degree() - 1; i >= 0; i--) {
+    for (long long i = N - 1; i >= 0; i--) {
 
         p = two_product_fma(s.result, x);
         s = two_sum(p.result, polynom[i]);
@@ -92,8 +94,11 @@ Type compensated_horner(const Polynom<Type, N> &polynom, const Type &x) {
         polynom_sigma[i] = s.error;
     }
 
+    std::cout << polynom_pi + polynom_sigma;
+
     return s.result + horner(polynom_pi + polynom_sigma, x);
 }
+
 
 /**
  * Calculating polynom coeffs from given roots
@@ -192,5 +197,6 @@ Type calc_error(const Polynom<Type, N> &polynom, const Type &x, const Type &unit
            2 * unit_roundoff * unit_roundoff *
            fabs(compensated_horner(polynom, x));
 }
+
 
 #endif //POLYNOMEVALUATION_POLYNOMEVALUATION_H

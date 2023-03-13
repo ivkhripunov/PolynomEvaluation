@@ -6,6 +6,7 @@
 #include <iostream>
 #include <initializer_list>
 #include <cmath>
+#include <boost/multiprecision/cpp_dec_float.hpp>
 
 template<typename Type, std::size_t N>
 class Polynom {
@@ -16,10 +17,6 @@ private:
 public:
     constexpr Polynom() {
         data_.fill(static_cast<Type>(0));
-    }
-
-    constexpr Polynom(const Polynom<Type, N> &other) {
-        for (auto i = 0; i < N + 1; ++i) data_[i] = other.data_[i];
     }
 
     constexpr Polynom(const std::initializer_list<Type> &initializer) {
@@ -43,7 +40,9 @@ public:
     }
 
     Polynom<Type, N> operator+=(const Polynom<Type, N> &other) {
-        for (auto i = 0; i < N; ++i) data_[i] += other[i];
+        for (auto i = 0; i < N + 1; ++i) {
+            data_[i] += other[i];
+        }
         return *this;
     }
 
@@ -60,7 +59,7 @@ public:
         Polynom<Type, N> result(*this);
 
         for (auto& element : result.data_) {
-            if (element < 0) element = - element;
+            if (element < 0) element = -element;
         }
 
         return result;
