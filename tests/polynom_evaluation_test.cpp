@@ -1,7 +1,7 @@
 #include "../src/PolynomEvaluation.h"
 #include <gtest/gtest.h>
 #include <fstream>
-/*
+
 TEST(POLYNOM_EVAL, TEST_1) {
     std::ofstream file;
     file.open("/home/ivankhripunov/CLionProjects/PolynomEvaluation/tests/log_1.txt");
@@ -93,7 +93,7 @@ TEST(POLYNOM_EVAL, TEST_2) {
 
 TEST(POLYNOM_EVAL, TEST_3) {
     std::ofstream file;
-    file.open("/home/ivankhripunov/CLionProjects/PolynomEvaluation/tests/log_1.txt");
+    file.open("/home/ivankhripunov/CLionProjects/PolynomEvaluation/tests/log_2.txt");
 
     std::vector<double> roots = {1.5346, -23957, 145.567, 384.4657, -0.00245, 6.35887, -70.5};
     std::vector<boost::multiprecision::cpp_dec_float_100> boost_roots = {1.5346, -23957, 145.567, 384.4657, -0.00245, 6.35887, -70.5};
@@ -112,30 +112,25 @@ TEST(POLYNOM_EVAL, TEST_3) {
         boost::multiprecision::cpp_dec_float_100 start("1.53");
         boost::multiprecision::cpp_dec_float_100 boost_x = start + i * boost_step;
 
-        std::size_t n = 100;
 
-        for (std::size_t j = 0; j < n; ++j) {
 
-            basic_result = basic_evaluation(p, x);
-            horner_result = horner(p, x);
-            comp_horner_result = compensated_horner(p, x);
-            boost_result = horner(boost_p, boost_x);
+        basic_result = basic_evaluation(p, x);
+        horner_result = horner(p, x);
+        comp_horner_result = compensated_horner(p, x);
+        boost_result = horner(boost_p, boost_x);
 
-        }
 
         file << std::fixed << std::setprecision(16)
-             << x << " " << boost_result / n << " "
-             << basic_result / n << " "
-             << horner_result / n << " "
-             << comp_horner_result / n << " "
-             << calc_error(p, x, 1.11e-16) << std::endl;
+             << x << " " << boost_result << " "
+             << horner_result << " "
+             << comp_horner_result << std::endl;
     }
 
     file.close();
 
-}*/
+}
 
-const std::size_t deg = 15;
+const std::size_t deg = 40;
 const double x = 1.333;
 
 TEST(POLYNOM_EVAL, TEST_4) {
