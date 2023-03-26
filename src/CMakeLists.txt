@@ -5,4 +5,4 @@ set(CMAKE_CXX_STANDARD 20)
 
 file(GLOB_RECURSE source *.h *.cpp *.hpp)
 
-add_library(PolynomEvaluation INTERFACE ${source} Polynom.h PolynomEvaluation.h)
+add_library(PolynomEvaluation INTERFACE ${source} PolynomEvaluation.h)
