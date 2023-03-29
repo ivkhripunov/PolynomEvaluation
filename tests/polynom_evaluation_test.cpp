@@ -8,7 +8,7 @@
  */
 
 template<typename T>
-T calc_gamma(const indexType &n) {
+T CalcGamma(const indexType &n) {
     T u = 1.11e-16;
     return n * u / (1 - n * u);
 }
@@ -35,17 +35,17 @@ T calc_absolute_error(const Polynom<T, N> &polynom, const T &x) {
 
     for (long long i = N - 1; i >= 0; i--) {
 
-        p = two_product_fma(s.result, x);
-        s = two_sum(p.result, polynom[i]);
+        p = TwoProductFMA(s.result, x);
+        s = TwoSum(p.result, polynom[i]);
 
         polynom_pi[i] = p.error;
         polynom_sigma[i] = s.error;
     }
 
-    res = s.result + horner(polynom_pi + polynom_sigma, x);
+    res = s.result + Horner(polynom_pi + polynom_sigma, x);
 
     return u * abs(res) +
-           (calc_gamma<T>(4 * N + 2) * horner(abs(polynom_pi) + abs(polynom_sigma), abs(x)) + 2 * u * u * abs(res));
+           (CalcGamma<T>(4 * N + 2) * Horner(abs(polynom_pi) + abs(polynom_sigma), abs(x)) + 2 * u * u * abs(res));
 
 }
 
@@ -318,7 +318,7 @@ TEST(POLYNOM_EVAL, TEST_1) {
     Polynom<scalar, 10> polynom(coeffs);
 
     for (indexType i = 0; i < test_points.size(); ++i) {
-        scalar compensated_horner_result = compensated_horner(polynom, test_points[i]);
+        scalar compensated_horner_result = CompensatedHorner(polynom, test_points[i]);
         scalar experimental_relative_error = std::abs(
                 (reference_results[i] - compensated_horner_result) * 1 / std::abs(reference_results[i]));
         ASSERT_TRUE(experimental_relative_error < reference_errors[i]);
@@ -527,7 +527,7 @@ TEST(POLYNOM_EVAL, TEST_2) {
     Polynom<scalar, 10> polynom(coeffs);
 
     for (indexType i = 0; i < test_points.size(); ++i) {
-        scalar compensated_horner_result = compensated_horner(polynom, test_points[i]);
+        scalar compensated_horner_result = CompensatedHorner(polynom, test_points[i]);
         scalar experimental_relative_error = abs(
                 (reference_results[i] - compensated_horner_result) * 1 / abs(reference_results[i]));
         //std::cout << experimental_relative_error << " " << 3 * reference_errors[i] << " " << i << std::endl;
@@ -744,7 +744,7 @@ TEST(POLYNOM_EVAL, TEST_3) {
     Polynom<scalar, 10> polynom(coeffs);
 
     for (indexType i = 0; i < test_points.size(); ++i) {
-        scalar compensated_horner_result = compensated_horner(polynom, test_points[i]);
+        scalar compensated_horner_result = CompensatedHorner(polynom, test_points[i]);
         scalar experimental_relative_error = abs(
                 (reference_results[i] - compensated_horner_result) * 1 / abs(reference_results[i]));
         ASSERT_TRUE(experimental_relative_error < 5 * reference_errors[i]);
@@ -988,7 +988,7 @@ TEST(POLYNOM_EVAL, TEST_4) {
     Polynom<scalar, 10> polynom(coeffs);
 
     for (indexType i = 0; i < test_points.size(); ++i) {
-        scalar compensated_horner_result = compensated_horner(polynom, test_points[i]);
+        scalar compensated_horner_result = CompensatedHorner(polynom, test_points[i]);
         scalar experimental_relative_error = abs(
                 (reference_results[i] - compensated_horner_result) * 1 / abs(reference_results[i]));
         std::cout << experimental_relative_error << " " << reference_errors[i] << " " << i << std::endl;
@@ -1268,7 +1268,7 @@ TEST(POLYNOM_EVAL, TEST_5) {
     Polynom<scalar, 8> polynom(coeffs);
 
     for (indexType i = 0; i < test_points.size(); ++i) {
-        scalar compensated_horner_result = compensated_horner(polynom, test_points[i]);
+        scalar compensated_horner_result = CompensatedHorner(polynom, test_points[i]);
         scalar experimental_relative_error = abs(
                 (reference_results[i] - compensated_horner_result) / abs(reference_results[i]));
         std::cout << experimental_relative_error << " " << reference_errors[i] << " " << i << std::endl;
@@ -1548,7 +1548,7 @@ TEST(POLYNOM_EVAL, TEST_6) {
     Polynom<scalar, 8> polynom(coeffs);
 
     for (indexType i = 0; i < test_points.size(); ++i) {
-        scalar compensated_horner_result = compensated_horner(polynom, test_points[i]);
+        scalar compensated_horner_result = CompensatedHorner(polynom, test_points[i]);
 
         std::cout << abs(reference_results[i] - compensated_horner_result) << " "
                   << 150 * calc_absolute_error(polynom, test_points[i]) << std::endl;
@@ -1720,11 +1720,11 @@ TEST(POLYNOM_EVAL, TEST_7) {
     Polynom<scalar, 1> polynom(coeffs);
 
     for (indexType i = 0; i < test_points.size(); ++i) {
-        scalar compensated_horner_result = compensated_horner(polynom, test_points[i]);
+        scalar compensated_horner_result = CompensatedHorner(polynom, test_points[i]);
         scalar experimental_relative_error = abs(
                 (reference_results[i] - compensated_horner_result) / abs(reference_results[i]));
         std::cout << reference_results[i] - compensated_horner_result << " " << reference_errors[i] << " " << i << std::endl;
-        //ASSERT_TRUE(experimental_relative_error < reference_errors[i]);
+        ASSERT_TRUE(experimental_relative_error < fmax(reference_errors[i], 1e-15));
     }
 
 }

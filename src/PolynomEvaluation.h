@@ -64,7 +64,7 @@ struct ReturnStruct {
  * @return struct: sum of numbers and error
  */
 template<typename T>
-ReturnStruct<T> two_sum(const T &a, const T &b) {
+ReturnStruct<T> TwoSum(const T &a, const T &b) {
 
     ReturnStruct<T> out;
 
@@ -86,8 +86,8 @@ ReturnStruct<T> two_sum(const T &a, const T &b) {
  * @return struct: result of a * b and error
  */
 template<typename T>
-ReturnStruct<T> two_product_fma(const T &a,
-                                const T &b) {
+ReturnStruct<T> TwoProductFMA(const T &a,
+                              const T &b) {
     ReturnStruct<T> out;
 
     out.result = a * b;
@@ -105,7 +105,7 @@ ReturnStruct<T> two_product_fma(const T &a,
  * @return polynom value in point x
  */
 template<typename T, indexType N>
-T horner(const Polynom<T, N> &polynom, const T &x) {
+T Horner(const Polynom<T, N> &polynom, const T &x) {
 
     T sum = polynom[N];
 
@@ -125,7 +125,7 @@ T horner(const Polynom<T, N> &polynom, const T &x) {
  * @return polynom value in point x
  */
 template<typename T, indexType N>
-T compensated_horner(const Polynom<T, N> &polynom, const T &x) {
+T CompensatedHorner(const Polynom<T, N> &polynom, const T &x) {
 
     Polynom<T, N - 1> polynom_pi, polynom_sigma;
 
@@ -134,14 +134,14 @@ T compensated_horner(const Polynom<T, N> &polynom, const T &x) {
 
     for (indexType i = N; i >= 1; i--) {
 
-        p = two_product_fma(s.result, x);
-        s = two_sum(p.result, polynom[i - 1]);
+        p = TwoProductFMA(s.result, x);
+        s = TwoSum(p.result, polynom[i - 1]);
 
         polynom_pi[i - 1] = p.error;
         polynom_sigma[i - 1] = s.error;
     }
 
-    return s.result + horner(polynom_pi + polynom_sigma, x);
+    return s.result + Horner(polynom_pi + polynom_sigma, x);
 }
 
 #endif //POLYNOMEVALUATION_POLYNOM_H
