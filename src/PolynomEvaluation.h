@@ -21,12 +21,13 @@ private:
     Containers::array<T, N + 1> data_;
 
 public:
+
     constexpr Polynom() {
         data_.fill(static_cast<T>(0));
     }
 
     constexpr Polynom(const Containers::array<T, N + 1> &coeffs) {
-        for (indexType i = 0; i < N + 1; ++i) data_[i] = coeffs[i];
+        data_ = coeffs;
     }
 
     const T &operator[](const indexType &i) const {
@@ -49,10 +50,10 @@ public:
     }
 };
 
-template<typename Type>
+template<typename T>
 struct ReturnStruct {
-    Type result;
-    Type error;
+    T result;
+    T error;
 };
 
 /**
@@ -108,8 +109,8 @@ T horner(const Polynom<T, N> &polynom, const T &x) {
 
     T sum = polynom[N];
 
-    for (long long i = N - 1; i >= 0; i--) {
-        sum = sum * x + polynom[i];
+    for (indexType i = N; i >= 1; i--) {
+        sum = sum * x + polynom[i - 1];
     }
 
     return sum;
@@ -131,13 +132,13 @@ T compensated_horner(const Polynom<T, N> &polynom, const T &x) {
     ReturnStruct<T> p, s;
     s.result = polynom[N];
 
-    for (long long i = N - 1; i >= 0; i--) {
+    for (indexType i = N; i >= 1; i--) {
 
         p = two_product_fma(s.result, x);
-        s = two_sum(p.result, polynom[i]);
+        s = two_sum(p.result, polynom[i - 1]);
 
-        polynom_pi[i] = p.error;
-        polynom_sigma[i] = s.error;
+        polynom_pi[i - 1] = p.error;
+        polynom_sigma[i - 1] = s.error;
     }
 
     return s.result + horner(polynom_pi + polynom_sigma, x);
