@@ -22,13 +22,9 @@ private:
 
 public:
 
-    constexpr Polynom() {
-        data_.fill(static_cast<T>(0));
-    }
+    constexpr Polynom() = default;
 
-    constexpr Polynom(const Containers::array<T, N + 1> &coeffs) {
-        data_ = coeffs;
-    }
+    constexpr Polynom(const Containers::array<T, N + 1> &coeffs) noexcept : data_(coeffs) {}
 
     const T &operator[](const indexType &i) const {
         return data_[i];

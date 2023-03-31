@@ -44,8 +44,8 @@ T CalcAbsoluteError(const Polynom<T, N> &polynom, const T &x) {
 
     res = s.result + Horner(polynom_pi + polynom_sigma, x);
 
-    return u * abs(res) +
-           (CalcGamma<T>(4 * N + 2) * Horner(GetAbs(polynom_pi) + GetAbs(polynom_sigma), abs(x)) + 2 * u * u * abs(res));
+    return u * std::abs(res) +
+           (CalcGamma<T>(4 * N + 2) * Horner(GetAbs(polynom_pi) + GetAbs(polynom_sigma), std::abs(x)) + 2 * u * u * abs(res));
 
 }
 
